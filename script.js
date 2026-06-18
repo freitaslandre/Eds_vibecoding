@@ -1,4 +1,5 @@
-const GEMINI_API_KEY = "AQ.Ab8RN6LWK6yE409sos_MyD8vKria4aZgStRLZ9irh7gOvDX_rg";
+const OPENAI_API_KEY = "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";
+const OPENAI_MODEL = "gpt-4.1-mini";
 
 const form = document.querySelector("#ideaForm");
 const topicInput = document.querySelector("#topic");
@@ -12,8 +13,8 @@ form.addEventListener("submit", async (event) => {
 
   const topic = topicInput.value.trim();
 
-  if (!GEMINI_API_KEY || GEMINI_API_KEY === "COLOCA_AQUI_A_TUA_API_KEY") {
-    showError("Insere a tua Gemini API key na variável GEMINI_API_KEY, no início do script.js.");
+  if (!OPENAI_API_KEY || OPENAI_API_KEY === "COLOCA_AQUI_A_TUA_OPENAI_API_KEY") {
+    showError("Insere a tua OpenAI API key na variável OPENAI_API_KEY, no início do script.js.");
     return;
   }
 
@@ -23,7 +24,7 @@ form.addEventListener("submit", async (event) => {
   }
 
   setLoading(true);
-  results.innerHTML = '<div class="empty">A gerar ideias com a Gemini API...</div>';
+  results.innerHTML = '<div class="empty">A gerar ideias com a OpenAI API...</div>';
 
   try {
     const ideas = await generateIdeas(topic);
@@ -36,31 +37,60 @@ form.addEventListener("submit", async (event) => {
 });
 
 async function generateIdeas(topic) {
-  const endpoint = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent";
-  const prompt = [
-    "Gera exatamente 5 ideias criativas relacionadas com o tema indicado.",
-    "Responde apenas em JSON válido, sem markdown, no formato:",
-    '{"ideas":[{"title":"Título curto","description":"Descrição com uma frase prática e específica"}]}',
-    `Tema: ${topic}`
-  ].join("\n");
+  const endpoint = "https://api.openai.com/v1/responses";
 
   const response = await fetch(endpoint, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
-      "x-goog-api-key": GEMINI_API_KEY
+      "Authorization": `Bearer ${OPENAI_API_KEY}`
     },
     body: JSON.stringify({
-      contents: [
+      model: OPENAI_MODEL,
+      input: [
+        {
+          role: "system",
+          content: "Responde sempre em portugues europeu e gera ideias criativas, praticas e especificas."
+        },
         {
           role: "user",
-          parts: [{ text: prompt }]
+          content: `Gera exatamente 5 ideias criativas relacionadas com este tema: ${topic}`
         }
       ],
-      generationConfig: {
-        temperature: 0.85,
-        maxOutputTokens: 900,
-        responseMimeType: "application/json"
+      max_output_tokens: 900,
+      text: {
+        format: {
+          type: "json_schema",
+          name: "ideas_response",
+          strict: true,
+          schema: {
+            type: "object",
+            additionalProperties: false,
+            properties: {
+              ideas: {
+                type: "array",
+                minItems: 5,
+                maxItems: 5,
+                items: {
+                  type: "object",
+                  additionalProperties: false,
+                  properties: {
+                    title: {
+                      type: "string",
+                      description: "Titulo curto da ideia."
+                    },
+                    description: {
+                      type: "string",
+                      description: "Descricao com uma frase pratica e especifica."
+                    }
+                  },
+                  required: ["title", "description"]
+                }
+              }
+            },
+            required: ["ideas"]
+          }
+        }
       }
     })
   });
@@ -72,13 +102,13 @@ async function generateIdeas(topic) {
   }
 
   const data = await response.json();
-  const text = data?.candidates?.[0]?.content?.parts?.[0]?.text;
+  const text = extractOpenAIText(data);
 
   if (!text) {
-    throw new Error("A Gemini API não devolveu conteúdo utilizável.");
+    throw new Error("A OpenAI API não devolveu conteúdo utilizável.");
   }
 
-  const parsed = parseGeminiJson(text);
+  const parsed = JSON.parse(text);
   const ideas = Array.isArray(parsed.ideas) ? parsed.ideas : [];
 
   if (ideas.length === 0) {
@@ -91,9 +121,15 @@ async function generateIdeas(topic) {
   }));
 }
 
-function parseGeminiJson(text) {
-  const cleaned = text.replace(/^```json\s*/i, "").replace(/^```\s*/i, "").replace(/```$/i, "").trim();
-  return JSON.parse(cleaned);
+function extractOpenAIText(data) {
+  if (typeof data.output_text === "string") {
+    return data.output_text;
+  }
+
+  return data.output
+    ?.flatMap((item) => item.content || [])
+    ?.find((content) => content.type === "output_text")
+    ?.text;
 }
 
 function renderIdeas(ideas) {
