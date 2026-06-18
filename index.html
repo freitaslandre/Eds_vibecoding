@@ -385,14 +385,9 @@
       <section class="workspace">
         <form id="ideaForm">
           <div class="field">
-            <label for="apiKey">Chave da Gemini API</label>
-            <input id="apiKey" name="apiKey" type="password" autocomplete="off" placeholder="AIza..." required />
-            <div class="hint">A chave fica apenas nesta sessão do browser e é usada diretamente no pedido à API.</div>
-          </div>
-
-          <div class="field">
             <label for="topic">Tema</label>
             <textarea id="topic" name="topic" placeholder="Ex.: melhorar a experiência de uma livraria local" required></textarea>
+            <div class="hint">A Gemini API vai gerar cinco ideias práticas a partir deste tema.</div>
           </div>
 
           <button id="generateButton" type="submit">
@@ -409,36 +404,35 @@
   </main>
 
   <script>
+    const GEMINI_API_KEY = "COLOCA_AQUI_A_TUA_API_KEY";
+
     const form = document.querySelector("#ideaForm");
-    const apiKeyInput = document.querySelector("#apiKey");
     const topicInput = document.querySelector("#topic");
     const results = document.querySelector("#results");
     const button = document.querySelector("#generateButton");
     const buttonText = document.querySelector("#buttonText");
     const buttonSpinner = document.querySelector("#buttonSpinner");
 
-    const savedKey = sessionStorage.getItem("geminiApiKey");
-    if (savedKey) {
-      apiKeyInput.value = savedKey;
-    }
-
     form.addEventListener("submit", async (event) => {
       event.preventDefault();
 
-      const apiKey = apiKeyInput.value.trim();
       const topic = topicInput.value.trim();
 
-      if (!apiKey || !topic) {
-        showError("Preenche a chave da API e o tema antes de gerar ideias.");
+      if (!GEMINI_API_KEY || GEMINI_API_KEY === "COLOCA_AQUI_A_TUA_API_KEY") {
+        showError("Insere a tua Gemini API key na variável GEMINI_API_KEY, no início do script.");
         return;
       }
 
-      sessionStorage.setItem("geminiApiKey", apiKey);
+      if (!topic) {
+        showError("Preenche o tema antes de gerar ideias.");
+        return;
+      }
+
       setLoading(true);
       results.innerHTML = '<div class="empty">A gerar ideias com a Gemini API...</div>';
 
       try {
-        const ideas = await generateIdeas(apiKey, topic);
+        const ideas = await generateIdeas(topic);
         renderIdeas(ideas);
       } catch (error) {
         showError(error.message || "Não foi possível gerar ideias agora.");
@@ -447,8 +441,8 @@
       }
     });
 
-    async function generateIdeas(apiKey, topic) {
-      const endpoint = "https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash:generateContent";
+    async function generateIdeas(topic) {
+      const endpoint = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent";
       const prompt = [
         "Gera exatamente 5 ideias criativas relacionadas com o tema indicado.",
         "Responde apenas em JSON válido, sem markdown, no formato:",
@@ -460,7 +454,7 @@
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          "x-goog-api-key": apiKey
+          "x-goog-api-key": GEMINI_API_KEY
         },
         body: JSON.stringify({
           contents: [
