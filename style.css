@@ -291,11 +291,34 @@ button:disabled {
   animation: rise 0.32s ease both;
 }
 
+.idea-button {
+  width: 100%;
+  min-height: auto;
+  justify-content: stretch;
+  color: inherit;
+  font: inherit;
+  text-align: left;
+  text-transform: none;
+  letter-spacing: 0;
+  cursor: pointer;
+}
+
 .idea:hover {
   transform: translateY(-2px);
   box-shadow: 0 24px 54px rgba(0, 0, 0, 0.18);
   background: linear-gradient(180deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.04));
   border-color: rgba(124, 92, 255, 0.3);
+}
+
+.idea-button:focus-visible {
+  outline: 0;
+  border-color: rgba(48, 227, 202, 0.65);
+  box-shadow: 0 0 0 5px rgba(48, 227, 202, 0.12), 0 24px 54px rgba(0, 0, 0, 0.18);
+}
+
+.idea-button.selected {
+  border-color: rgba(48, 227, 202, 0.45);
+  background: linear-gradient(180deg, rgba(48, 227, 202, 0.12), rgba(255, 255, 255, 0.04));
 }
 
 .idea-number {
@@ -322,6 +345,66 @@ button:disabled {
   margin: 0;
   color: var(--muted);
   line-height: 1.8;
+}
+
+.detail {
+  display: grid;
+  gap: 16px;
+}
+
+.detail-panel {
+  padding: 26px;
+  border: 1px solid rgba(48, 227, 202, 0.18);
+  border-radius: 24px;
+  background: linear-gradient(180deg, rgba(48, 227, 202, 0.08), rgba(255, 255, 255, 0.04));
+  box-shadow: 0 22px 54px rgba(0, 0, 0, 0.16);
+  animation: rise 0.32s ease both;
+}
+
+.detail-eyebrow {
+  display: inline-flex;
+  margin-bottom: 10px;
+  color: var(--accent);
+  font-size: 0.78rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.detail-panel h2 {
+  margin: 0;
+  color: #ffffff;
+  font-size: 1.35rem;
+  line-height: 1.35;
+  letter-spacing: -0.02em;
+}
+
+.detail-overview {
+  margin: 12px 0 22px;
+  color: var(--muted);
+  line-height: 1.8;
+}
+
+.detail-section {
+  margin-top: 18px;
+}
+
+.detail-section h3 {
+  margin: 0 0 10px;
+  color: #ffffff;
+  font-size: 0.98rem;
+  letter-spacing: 0.02em;
+}
+
+.detail-section ul {
+  margin: 0;
+  padding-left: 20px;
+  color: var(--muted);
+  line-height: 1.8;
+}
+
+.detail-section li + li {
+  margin-top: 7px;
 }
 
 .spinner {
