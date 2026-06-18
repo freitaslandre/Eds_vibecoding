@@ -7,56 +7,36 @@
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-  <main>
-    <section class="app" aria-label="Gerador de Ideias com IA">
-      <aside class="intro">
-        <div>
-          <div class="brand">
-            <span class="spark" aria-hidden="true">
-              <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
-                <path d="M12 2l1.6 6.2L20 10l-6.4 1.8L12 18l-1.6-6.2L4 10l6.4-1.8L12 2z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/>
-                <path d="M19 16l.7 2.3L22 19l-2.3.7L19 22l-.7-2.3L16 19l2.3-.7L19 16z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/>
-              </svg>
-            </span>
-            IA criativa
-          </div>
-          <h1>Gerador de Ideias com IA</h1>
-          <p>Escreve um tema, produto, desafio ou área de interesse e recebe cinco ideias criativas geradas pela OpenAI API.</p>
-        </div>
+  <main class="app-shell" aria-label="Gerador de Ideias com IA">
+    <header class="topbar">
+      <a class="brand" href="/" aria-label="Gerador de Ideias com IA">
+        <span class="brand-mark" aria-hidden="true"></span>
+        <span>Ideias IA</span>
+      </a>
+      <span class="model-pill">OpenAI API</span>
+    </header>
 
-        <div class="status-strip" aria-label="Resumo">
-          <div class="metric">
-            <strong>5</strong>
-            <span>ideias por pedido</span>
-          </div>
-          <div class="metric">
-            <strong>IA</strong>
-            <span>OpenAI API</span>
-          </div>
-        </div>
-      </aside>
+    <section class="chat" aria-live="polite">
+      <div class="welcome" id="welcome">
+        <span class="welcome-mark" aria-hidden="true"></span>
+        <h1>Que ideia queres explorar?</h1>
+        <p>Escreve um tema, produto, desafio ou area de interesse. Eu devolvo cinco direcoes criativas e podes abrir qualquer uma para a aprofundar.</p>
+      </div>
 
-      <section class="workspace">
-        <form id="ideaForm">
-          <div class="field">
-            <label for="topic">Tema</label>
-            <textarea id="topic" name="topic" placeholder="Ex.: melhorar a experiência de uma livraria local" required></textarea>
-            <div class="hint">A OpenAI API vai gerar cinco ideias práticas a partir deste tema.</div>
-          </div>
-
-          <button id="generateButton" type="submit">
-            <span id="buttonText">Gerar Ideias</span>
-            <span id="buttonSpinner" class="spinner hidden" aria-hidden="true"></span>
-          </button>
-        </form>
-
-        <div id="results" class="results" aria-live="polite">
-          <div class="empty">As ideias geradas aparecem aqui, prontas para explorar, adaptar ou transformar num plano de ação.</div>
-        </div>
-
-        <div id="ideaDetail" class="detail hidden" aria-live="polite"></div>
-      </section>
+      <div id="conversation" class="conversation">
+        <div id="results" class="results"></div>
+        <div id="ideaDetail" class="detail hidden"></div>
+      </div>
     </section>
+
+    <form id="ideaForm" class="composer">
+      <label class="sr-only" for="topic">Tema</label>
+      <textarea id="topic" name="topic" placeholder="Pergunta por ideias para..." required></textarea>
+      <button id="generateButton" class="send-button" type="submit" aria-label="Gerar ideias">
+        <span id="buttonText">Gerar</span>
+        <span id="buttonSpinner" class="spinner hidden" aria-hidden="true"></span>
+      </button>
+    </form>
   </main>
 
   <script src="script.js"></script>
