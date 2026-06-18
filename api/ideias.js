@@ -30,7 +30,7 @@ module.exports = async function handler(req, res) {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        Authorization: `Bearer ${process.env.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}`
+        Authorization: `Bearer ${process.env.OPENAI_API_KEY}`
       },
       body: JSON.stringify(payload)
     });
