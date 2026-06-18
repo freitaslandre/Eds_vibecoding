@@ -1,4 +1,4 @@
-const OPENAI_API_KEY = "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";
+const OPENAI_API_KEY = "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";
 const OPENAI_MODEL = "gpt-4.1-mini";
 
 const form = document.querySelector("#ideaForm");
@@ -8,23 +8,27 @@ const button = document.querySelector("#generateButton");
 const buttonText = document.querySelector("#buttonText");
 const buttonSpinner = document.querySelector("#buttonSpinner");
 
+form.noValidate = true;
+showEmptyMessage();
+
 form.addEventListener("submit", async (event) => {
   event.preventDefault();
 
   const topic = topicInput.value.trim();
+
+  if (!topic) {
+    showError("Escreve um tema antes de carregar em Gerar Ideias.");
+    topicInput.focus();
+    return;
+  }
 
   if (!OPENAI_API_KEY || OPENAI_API_KEY === "COLOCA_AQUI_A_TUA_OPENAI_API_KEY") {
     showError("Insere a tua OpenAI API key na variável OPENAI_API_KEY, no início do script.js.");
     return;
   }
 
-  if (!topic) {
-    showError("Preenche o tema antes de gerar ideias.");
-    return;
-  }
-
   setLoading(true);
-  results.innerHTML = '<div class="empty">A gerar ideias com a OpenAI API...</div>';
+  showLoading();
 
   try {
     const ideas = await generateIdeas(topic);
@@ -111,10 +115,6 @@ async function generateIdeas(topic) {
   const parsed = JSON.parse(text);
   const ideas = Array.isArray(parsed.ideas) ? parsed.ideas : [];
 
-  if (ideas.length === 0) {
-    throw new Error("A resposta não trouxe ideias no formato esperado.");
-  }
-
   return ideas.slice(0, 5).map((idea, index) => ({
     title: String(idea.title || `Ideia ${index + 1}`).trim(),
     description: String(idea.description || "").trim()
@@ -134,6 +134,11 @@ function extractOpenAIText(data) {
 
 function renderIdeas(ideas) {
   results.innerHTML = "";
+
+  if (ideas.length === 0) {
+    showEmptyMessage();
+    return;
+  }
 
   ideas.forEach((idea, index) => {
     const article = document.createElement("article");
@@ -155,6 +160,32 @@ function renderIdeas(ideas) {
     article.append(number, content);
     results.appendChild(article);
   });
+}
+
+function showEmptyMessage() {
+  results.innerHTML = "";
+  const empty = document.createElement("div");
+  empty.className = "empty";
+  empty.textContent = "Escreve um tema para começar";
+  results.appendChild(empty);
+}
+
+function showLoading() {
+  results.innerHTML = "";
+
+  const loading = document.createElement("div");
+  loading.className = "empty loading-card";
+  loading.setAttribute("role", "status");
+
+  const spinner = document.createElement("span");
+  spinner.className = "result-spinner";
+  spinner.setAttribute("aria-hidden", "true");
+
+  const text = document.createElement("span");
+  text.textContent = "A gerar ideias com a OpenAI API...";
+
+  loading.append(spinner, text);
+  results.appendChild(loading);
 }
 
 function showError(message) {

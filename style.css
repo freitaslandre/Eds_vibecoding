@@ -232,6 +232,22 @@ button:disabled {
   background: #fff7f7;
 }
 
+.loading-card {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.result-spinner {
+  width: 22px;
+  height: 22px;
+  flex: 0 0 auto;
+  border: 3px solid rgba(20, 110, 245, 0.18);
+  border-top-color: var(--primary);
+  border-radius: 50%;
+  animation: spin 0.75s linear infinite;
+}
+
 .idea {
   display: grid;
   grid-template-columns: 42px 1fr;
