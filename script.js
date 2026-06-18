@@ -1,4 +1,4 @@
-const OPENAI_API_KEY = "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";
+const OPENAI_API_KEY = "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";
 const OPENAI_MODEL = "gpt-4.1-mini";
 
 const form = document.querySelector("#ideaForm");
